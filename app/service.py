@@ -1,14 +1,14 @@
 import logging,uuid
 from .config import settings
 from .cost import estimate_usage
-from .generation import ExtractiveGenerator
+from .factory import build_generator
 from .grounding import citation_coverage
 from .ingestion import chunk_document
 from .models import Citation,DocumentIn,QueryOut
 from .reranking import LexicalReranker
 from .retrieval import InMemoryHybridRetriever
 logger=logging.getLogger("production_rag")
-retriever=InMemoryHybridRetriever();reranker=LexicalReranker();generator=ExtractiveGenerator()
+retriever=InMemoryHybridRetriever();reranker=LexicalReranker();generator=build_generator()
 def ingest(doc:DocumentIn)->int:
     chunks=chunk_document(doc,settings.chunk_words,settings.chunk_overlap);retriever.add(chunks)
     logger.info("document_ingested",extra={"document_id":doc.id,"chunks":len(chunks)});return len(chunks)
