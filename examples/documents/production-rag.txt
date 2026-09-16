@@ -1,0 +1,1 @@
+A production-oriented RAG system treats retrieval quality as a measurable subsystem. It preserves source metadata for citations, evaluates retrieval separately from answer generation, traces requests, applies explicit context and cost budgets, and handles provider failures with bounded retries and timeouts. High-impact workflows may also require human review.
