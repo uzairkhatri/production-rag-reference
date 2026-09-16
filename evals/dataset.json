@@ -1,0 +1,14 @@
+[
+  {
+    "question": "How should a production RAG system handle retrieval quality?",
+    "relevant_document_ids": ["production-rag"]
+  },
+  {
+    "question": "Why should source metadata be preserved?",
+    "relevant_document_ids": ["production-rag"]
+  },
+  {
+    "question": "What controls help with model provider failures?",
+    "relevant_document_ids": ["production-rag"]
+  }
+]
