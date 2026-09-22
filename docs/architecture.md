@@ -33,8 +33,11 @@ The important architectural property is that retrieval, reranking and generation
 - source metadata survives ingestion through citations; it does not verify answer claims
 - retrieval and reranking are independently testable
 - query responses include a trace identifier
-- local generation has a word limit; token estimates and hit trimming are not strict spending caps
-- empty retrieval or all-zero lexical scores trigger abstention; semantic sufficiency is not checked
+- both generators share word-bounded context selection; token estimates and hit trimming are not strict spending caps
+- zero-score chunks are excluded from generation and citations
+- recognized numeric/version requests require value evidence before generation; general semantic sufficiency is not checked
 - external-provider retries/timeouts belong at provider adapters, not in business logic
 
 See the [deployment limitations](../README.md#limits-to-understand-before-deployment) for persistence, access control, index updates, logging, and provider-validation gaps.
+
+The [evidence guard](evidence-check.md) lives inside both generator implementations so direct generator calls, the API, and local evaluation use the same check. It checks the actual truncated text, not excluded chunks or their titles. Failed checks return the existing abstention message with no citations and skip the provider request. Successful checks do not verify the generated answer.

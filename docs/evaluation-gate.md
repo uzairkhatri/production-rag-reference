@@ -7,7 +7,8 @@ The runner loads [corpus.json](../evals/corpus.json) and [dataset.json](../evals
 After [installation](../README.md#try-it-locally), run from the repository root:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/run_eval.py --baseline evals/baseline.json --output reports/evaluation.json --summary-output reports/evaluation.md
+.\.venv\Scripts\python.exe scripts/run_eval.py --baseline evals/baseline.json --min-abstention 0.80 --output reports/evaluation.json --summary-output reports/evaluation.md
+.\.venv\Scripts\python.exe scripts/run_eval.py --corpus evals/evidence-corpus.json --dataset evals/evidence-dataset.json --baseline evals/evidence-baseline.json --min-abstention 0.75 --output reports/evidence.json --summary-output reports/evidence.md
 ```
 
 On macOS / Linux replace `.\.venv\Scripts\python.exe` with `.venv/bin/python`. Output files are generated and ignored by Git. The complete report is also printed as JSON.
@@ -16,7 +17,7 @@ The default thresholds remain Recall@5 >= 0.80 and MRR >= 0.80. Supplying `--bas
 
 Exit codes: **0** for satisfied gates, **1** for measured threshold failures or regressions, **2** for invalid inputs or file errors. JSON and Markdown reports are still written when a measured gate fails. Invalid inputs are rejected before reporting scores.
 
-GitHub Actions runs on pull requests and main, publishes a job summary, and uploads the `rag-evaluation` artifact even on gate failure when reports exist.
+GitHub Actions runs both suites on pull requests and main, publishes summaries, and uploads `rag-evaluation-original` and `rag-evaluation-value-evidence` artifacts even on gate failure when reports exist. Its minimum unsupported-abstention rates are 0.80 and 0.75 respectively. Both suites retain per-case checks, including supported questions, to prevent an always-abstain strategy from passing.
 
 ## Read the metrics correctly
 
@@ -26,11 +27,11 @@ GitHub Actions runs on pull requests and main, publishes a job summary, and uplo
 - **Answerable non-abstention rate:** checks that the generator does not reject supported questions. It does not validate the content of an answer.
 - **Case failures:** missing required documents, a non-relevant first result, an unsupported question answered, or an answerable question rejected. They remain listed even when accepted by the regression baseline.
 
-The report includes category-level retrieval scores, ranked document/chunk IDs, missing IDs, expected/observed abstention, and a short answer excerpt. The retrieval implementation retains zero-score hits; retrieval presence alone is not evidence sufficiency.
+The report includes category-level retrieval scores, ranked document/chunk IDs, missing IDs, expected/observed abstention, evidence-check reasons, and a short answer excerpt. Retrieval retains zero-score hits for scoring, but generation now excludes them. Retrieval presence alone is not evidence sufficiency.
 
 ## Known gaps are not hidden
 
-The initial [results](evaluation-results.md) include two paraphrase failures and five unsupported questions answered. The committed baseline records those limitations, not a claim that they are acceptable for deployment. CI protects against new regressions; it does not certify correctness.
+The historical [results](evaluation-results.md) included two paraphrase failures and five unsupported questions answered. The [value evidence guard](evidence-check.md) fixes four of those unsupported cases; the loan-policy question and retrieval weaknesses remain. The additional suite retains unsupported owner-name and backup-location failures. Baselines record current behavior, not deployment approval. Only four abstention flags in the original baseline were strengthened; no fixture labels or retrieval floors were weakened.
 
 For a strict unsupported-question gate:
 
@@ -38,7 +39,7 @@ For a strict unsupported-question gate:
 .\.venv\Scripts\python.exe scripts/run_eval.py --baseline evals/baseline.json --min-abstention 1 --output reports/strict.json
 ```
 
-This currently exits **1**, because only 1 of 6 unsupported questions is rejected. A future fix should improve those decisions without breaking answerable cases. Never remove difficult questions merely to obtain a green check.
+This still exits **1**, because 5 of 6 unsupported questions are rejected, not all six. A future fix should improve the remaining decision without breaking supported cases. Never remove difficult questions merely to obtain a green check.
 
 ## Review and update a baseline
 

@@ -95,22 +95,22 @@
     "unsupported-sla": {
       "recall_at_k": null,
       "reciprocal_rank": null,
-      "abstention_correct": false
+      "abstention_correct": true
     },
     "unsupported-retention": {
       "recall_at_k": null,
       "reciprocal_rank": null,
-      "abstention_correct": false
+      "abstention_correct": true
     },
     "unsupported-price": {
       "recall_at_k": null,
       "reciprocal_rank": null,
-      "abstention_correct": false
+      "abstention_correct": true
     },
     "unsupported-sdk": {
       "recall_at_k": null,
       "reciprocal_rank": null,
-      "abstention_correct": false
+      "abstention_correct": true
     },
     "unsupported-finance": {
       "recall_at_k": null,

@@ -6,7 +6,9 @@ RAG quality should be split into retrieval and answer quality.
 
 `scripts/run_eval.py` loads a versioned corpus and labelled questions: 10 synthetic documents, 18 answerable questions, and 6 unsupported questions. It reports Recall@5 and reciprocal rank on answerable questions, with separate direct/paraphrase/multi-document slices. Relevance is labelled by document ID; rank positions are the retrieved chunks, including repeated chunks from the same document.
 
-The local extractive generator is exercised separately for its abstention decision. Unsupported questions do not contribute zeroes or automatic successes to retrieval averages. Reports include expected/retrieved IDs, missing evidence, ranks, an answer excerpt, and named failures. A non-abstaining answer on an answerable question is not proof that the answer is correct.
+The local extractive generator is exercised separately for its abstention decision, including its shared value-evidence guard. Unsupported questions do not contribute zeroes or automatic successes to retrieval averages. Reports include expected/retrieved IDs, missing evidence, ranks, an answer excerpt, evidence-check reasons, and named failures. A non-abstaining answer on an answerable question is not proof that the answer is correct.
+
+A separate 7-document, 16-question suite tests supported values, missing values, unrelated numeric distractors, and procedural questions. It is newly authored regression coverage, not independent or held-out validation. See [before/after results](evidence-check.md#measured-results).
 
 CI combines aggregate thresholds with per-case regression floors. Known failures remain in the report, not excluded from scoring. See [baseline policy](evaluation-gate.md), [fixture labels](../evals/README.md), and [measured results](evaluation-results.md).
 

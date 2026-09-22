@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {"id": "orion-availability", "title": "Orion availability", "source": "synthetic://orion/availability", "text": "Orion API uptime commitment is 99.95 percent per calendar month."},
+    {"id": "orion-billing", "title": "Orion billing", "source": "synthetic://orion/billing", "text": "Orion API input processing costs USD 2.50 per million tokens. Orion archive storage costs USD 0.08 per gigabyte."},
+    {"id": "orion-retention", "title": "Orion retention", "source": "synthetic://orion/retention", "text": "Orion account exports are retained for thirty days after closure."},
+    {"id": "orion-sdk", "title": "Orion client software", "source": "synthetic://orion/sdk", "text": "Orion Python SDK version 2.7.1 is installed. The Orion runtime uses Python 3.12."},
+    {"id": "orion-gateway", "title": "Orion gateway", "source": "synthetic://orion/gateway", "text": "Orion gateway allows 120 requests per minute. The client retries three times before reporting failure."},
+    {"id": "orion-operations", "title": "Orion operational procedures", "source": "synthetic://orion/operations", "text": "To investigate Orion outages, correlate trace identifiers with deployment changes. To control token costs, trim context and record measured usage."},
+    {"id": "workshop", "title": "Engineering training workshop", "source": "synthetic://orion/distractor", "text": "The training workshop lasts two hours and costs USD 80. The event registration service reports 98 percent attendance. It has no Orion account policies."}
+  ]
+}

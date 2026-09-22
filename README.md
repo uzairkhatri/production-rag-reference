@@ -18,7 +18,7 @@ A plausible answer alone does not tell you whether retrieval found the right evi
 | Where did an answer come from? | Source metadata carried from chunks into response citations |
 | Which component selected the evidence? | Separate retrieval and reranking implementations |
 | Did retrieval regress? | A labelled fixture, Recall@5 / MRR, and a failing exit code |
-| What happens without lexical evidence? | Deterministic abstention with no citations |
+| What happens with insufficient evidence? | Zero-context abstention plus a limited value-presence guard for numeric/version questions |
 | Where does a model provider belong? | A generator interface and optional OpenAI adapter |
 | How can a request be identified? | A response trace ID and application logging calls |
 
@@ -109,23 +109,25 @@ Windows PowerShell, from the repository root:
 $env:RAG_GENERATOR_PROVIDER = "local"
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 .\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe scripts/run_eval.py --baseline evals/baseline.json --output reports/evaluation.json --summary-output reports/evaluation.md
+.\.venv\Scripts\python.exe scripts/run_eval.py --baseline evals/baseline.json --min-abstention 0.80 --output reports/evaluation.json --summary-output reports/evaluation.md
 ```
 
 On macOS / Linux, set `export RAG_GENERATOR_PROVIDER=local` and replace `.\.venv\Scripts\python.exe` with `.venv/bin/python`.
 
-The bundled suite contains 8 direct questions, 8 paraphrases, 2 multi-document questions, and 6 unsupported questions. Two topic-overlapping distractor documents compete with the runbooks. Initial measured results:
+The original suite contains 8 direct questions, 8 paraphrases, 2 multi-document questions, and 6 unsupported questions. Two topic-overlapping distractor documents compete with the runbooks. Current measured results:
 
 | Measure | Result |
 | --- | --- |
 | Recall@5, answerable questions only | 0.9444 |
 | MRR, answerable questions only | 0.9167 |
-| Unsupported questions correctly rejected | 1 / 6 |
+| Unsupported questions correctly rejected | 5 / 6 (previously 1 / 6) |
 | Answerable questions not rejected | 18 / 18 |
 
-**Strong retrieval does not imply safe abstention.** The suite exposes a missed budget paraphrase, a lower-ranked provider paraphrase, and five unsupported questions that receive source text instead of abstention. These remain visible failures even when the regression gate passes. This small, authored synthetic suite is not a production accuracy or safety benchmark. See [measured results and known gaps](docs/evaluation-results.md).
+The shared [value evidence guard](docs/evidence-check.md) rejects recognized price, percentage, quantity, and version requests when a matching value is absent from relevant, budgeted context. It runs before local generation or an optional provider call. A second suite of 16 newly authored questions preserves 8/8 supported answers and rejects 6/8 unsupported questions, versus 0/8 with the old generator. These are additional regression examples, not an independently held-out benchmark.
 
-CI requires Recall@5 and MRR of at least 0.80 and rejects individual regressions against the committed baseline. It publishes JSON evidence and a readable summary, including known failures. To demand correct abstention on every unsupported question, add `--min-abstention 1`; **that stricter check currently fails**, intentionally exposing the existing limitation.
+**Strong retrieval does not imply safe abstention.** The original suite still misses a budget paraphrase, ranks a provider paraphrase second, and answers an unsupported loan-policy question. The additional suite still answers unsupported owner-name and backup-location questions. This rule-based guard does not establish semantic answerability. See [before/after results and limits](docs/evidence-check.md#measured-results) and the [historical pre-guard results](docs/evaluation-results.md).
+
+CI runs both suites, requires Recall@5 and MRR of at least 0.80, and rejects individual regressions against strengthened baselines. It also requires unsupported abstention of at least 0.80 on the original suite and 0.75 on the additional suite. Reports include known failures and evidence-check reasons. To demand correct abstention on every unsupported question, add `--min-abstention 1`; **that stricter check still fails**.
 
 Tests cover metrics, invalid fixtures, threshold validation, baseline compatibility, per-case regression detection, deliberately broken retrieval/abstention, the API walkthrough, and existing pipeline behaviors. CI runs tests on Python 3.10-3.13 and the evaluation gate on pull requests and main. See [evaluation commands and baseline review](docs/evaluation-gate.md).
 
@@ -133,8 +135,8 @@ Tests cover metrics, invalid fixtures, threshold validation, baseline compatibil
 
 - **Not a hosted service:** no authentication, tenant isolation, rate limits, durable storage, or document deletion API. Keep the demo bound to loopback. Multiple workers do not share an index.
 - **Citations are metadata, not factual verification:** a cited chunk does not prove each claim follows from it. Mixed relevant and irrelevant chunks can both enter the answer. Token-overlap grounding is only a heuristic.
-- **Abstention is lexical:** empty retrieval or all-zero scores trigger abstention. An unsupported question sharing words with a document may still produce an answer.
-- **Budgets are approximate:** token usage is estimated from words before trimming, not measured provider usage. Trimming hit counts is not a strict token or spending cap. The local word limit does not impose an equivalent input-context limit on the optional provider.
+- **Abstention remains heuristic:** English numeric/version requests get a value-presence check, not semantic verification. Other requests retain lexical behavior. Unsupported questions can still receive text; supported questions with unfamiliar wording can be rejected.
+- **Budgets are approximate:** token usage is estimated from words before filtering/trimming, not measured provider usage. Both generators now check and use word-bounded source text, but this is not a model-token limit, full-prompt limit, or spending cap.
 - **Observability is a starting point:** trace IDs and logging calls exist; log formatting, export, dashboards, and distributed tracing are not configured.
 - **Provider behavior needs deployment testing:** offline tests do not validate live output, billing, timeouts, or every SDK error/retry path.
 - **Updates need care:** re-ingesting an ID replaces matching chunk IDs, but shorter replacements can leave old trailing chunks behind. Restart the demo for a clean index.
@@ -147,6 +149,7 @@ Before using this pattern with real users, add representative positive and negat
 - [Architecture and boundaries](docs/architecture.md)
 - [Retrieval gate and limitations](docs/evaluation-gate.md)
 - [Measured results and known failures](docs/evaluation-results.md)
+- [Value evidence guard and before/after results](docs/evidence-check.md)
 - [Evaluation strategy](docs/evaluation.md)
 - [Provider interfaces](docs/provider-boundaries.md)
 - [Optional OpenAI setup](docs/openai-provider.md)

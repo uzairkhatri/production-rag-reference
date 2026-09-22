@@ -132,6 +132,7 @@ def evaluate_benchmark(corpus: Corpus, dataset: Dataset, top_k: int = 5) -> dict
             "recall_at_k": recall, "reciprocal_rank": rr,
             "expected_abstention": expected_abstention, "abstained": abstained,
             "abstention_correct": abstained == expected_abstention,
+            "evidence_reason": generated.evidence_reason,
             "answer_excerpt": generated.text[:240], "failures": failures,
         })
 

@@ -7,7 +7,22 @@ permissions:
   contents: read
 jobs:
   retrieval-quality:
+    name: retrieval-quality (${{ matrix.suite }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: original
+            corpus: evals/corpus.json
+            dataset: evals/dataset.json
+            baseline: evals/baseline.json
+            min-abstention: "0.80"
+          - suite: value-evidence
+            corpus: evals/evidence-corpus.json
+            dataset: evals/evidence-dataset.json
+            baseline: evals/evidence-baseline.json
+            min-abstention: "0.75"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17,7 +32,8 @@ jobs:
       - name: Run retrieval and per-case regression gate
         run: >-
           python scripts/run_eval.py --min-recall 0.80 --min-mrr 0.80
-          --baseline evals/baseline.json
+          --corpus ${{ matrix.corpus }} --dataset ${{ matrix.dataset }}
+          --baseline ${{ matrix.baseline }} --min-abstention ${{ matrix.min-abstention }}
           --output reports/evaluation.json --summary-output reports/evaluation.md
       - name: Publish evaluation summary
         if: always()
@@ -31,6 +47,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: rag-evaluation
+          name: rag-evaluation-${{ matrix.suite }}
           path: reports/evaluation.*
           if-no-files-found: warn

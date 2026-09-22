@@ -1,6 +1,8 @@
 # Initial expanded evaluation results
 
-Measured on the unchanged local retrieval/reranking/extractive-generation pipeline with the committed synthetic fixtures: 10 documents, 10 chunks, top K of 5, and 24 questions. This is a deterministic regression reference, not a claim about production accuracy or a live model benchmark.
+This page preserves the historical, pre-evidence-guard results at commit `e3338d1` (merged PR #7). For current results see the [value evidence comparison](evidence-check.md#measured-results). The original corpus and questions have not been removed or relabelled.
+
+Measured on the then-current local retrieval/reranking/extractive-generation pipeline: 10 documents, 10 chunks, top K of 5, and 24 questions. This is a deterministic regression reference, not a claim about production accuracy or a live model benchmark.
 
 ## Results by question type
 
@@ -35,6 +37,6 @@ Tests deliberately break retrieval and abstention to verify that new regressions
 
 ## Reproduce and inspect
 
-Follow the [evaluation command](evaluation-gate.md#run-the-same-gate-as-ci). The generated JSON report contains ranked document/chunk IDs, missing evidence, expected and actual abstention, and source-text excerpts for every question. The Markdown summary and GitHub Actions artifact make known failures visible even on a passing run.
+The generator at commit `e3338d1` reproduces the pre-guard behavior on the original fixtures. The [evaluation command](evaluation-gate.md#run-the-same-gate-as-ci) on the latest code now reports the improved behavior. Reports contain ranked IDs, missing evidence, abstention decisions, and excerpts; known failures remain visible even on passing runs.
 
 Next engineering work should address semantic evidence sufficiency and paraphrase retrieval, then rerun this suite without deleting or relabelling inconvenient questions. Before production conclusions, add realistic multi-chunk corpora, independently labelled queries, answer/citation correctness checks, and application-specific security tests.

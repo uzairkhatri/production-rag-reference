@@ -98,7 +98,7 @@ def test_per_case_regression_is_not_hidden_by_improvement_elsewhere(report):
 def test_improved_known_failure_is_allowed(report):
     baseline = baseline_from_report(report)
     improved = deepcopy(report)
-    row = next(row for row in improved["cases"] if row["id"] == "unsupported-sla")
+    row = next(row for row in improved["cases"] if row["id"] == "unsupported-finance")
     row["abstention_correct"] = True
     assert baseline_regressions(improved, baseline) == []
 
@@ -168,3 +168,22 @@ def test_environment_cannot_select_paid_generation(corpus, dataset, report, monk
     monkeypatch.setenv("RAG_GENERATOR_PROVIDER", "openai")
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     assert evaluate_benchmark(corpus, dataset) == report
+
+
+def test_original_supported_cases_preserved_with_better_abstention(report):
+    assert report["summary"]["answerable_non_abstention_rate"] == 1.0
+    assert report["summary"]["unsupported_abstention_rate"] >= 5 / 6
+    assert report["summary"]["recall_at_k"] >= 17 / 18
+
+
+def test_additional_numeric_and_procedural_cases():
+    corpus = Corpus.model_validate_json((ROOT / "evals/evidence-corpus.json").read_text(encoding="utf-8"))
+    dataset = Dataset.model_validate_json((ROOT / "evals/evidence-dataset.json").read_text(encoding="utf-8"))
+    baseline = Baseline.model_validate_json((ROOT / "evals/evidence-baseline.json").read_text(encoding="utf-8"))
+    report = evaluate_benchmark(corpus, dataset)
+    assert report["summary"]["answerable_non_abstention_rate"] == 1.0
+    assert report["summary"]["unsupported_abstention_rate"] >= 0.75
+    assert baseline_regressions(report, baseline) == []
+    for row in report["cases"]:
+        if row["id"].startswith("value-"):
+            assert row["evidence_reason"] == "value_evidence_present"
