@@ -30,9 +30,11 @@ The important architectural property is that retrieval, reranking and generation
 
 ## Production concerns represented
 
-- grounded source metadata survives ingestion through citations
+- source metadata survives ingestion through citations; it does not verify answer claims
 - retrieval and reranking are independently testable
 - query responses include a trace identifier
-- context has an explicit budget
-- unknown/zero-evidence queries fail closed rather than inventing an answer
+- local generation has a word limit; token estimates and hit trimming are not strict spending caps
+- empty retrieval or all-zero lexical scores trigger abstention; semantic sufficiency is not checked
 - external-provider retries/timeouts belong at provider adapters, not in business logic
+
+See the [deployment limitations](../README.md#limits-to-understand-before-deployment) for persistence, access control, index updates, logging, and provider-validation gaps.
