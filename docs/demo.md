@@ -74,7 +74,7 @@ The response has `citations: []`. This tests zero lexical overlap, not whether t
 
 Follow [Verify it](../README.md#verify-it) for test installation and commands. The evaluation command does not need a running API; it creates its own index.
 
-The [retrieval gate](evaluation-gate.md) fails when Recall@5 or MRR misses a configured threshold. Its three-question, one-document fixture is deliberately a smoke test.
+The [evaluation gate](evaluation-gate.md) checks retrieval thresholds and individual regressions against a reviewed baseline. Its separate corpus contains 10 synthetic documents and 24 questions; it does not reuse the single walkthrough document. Unsupported-question failures are reported separately and remain visible even if the regression gate passes.
 
 ## Optional provider
 

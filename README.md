@@ -97,7 +97,7 @@ Labelled queries -> retrieval + reranking -> Recall@5 / MRR -> CI gate
 | Reranking | Lexical overlap with chunk title and text | No learned reranker or extra model dependency |
 | Local generation | Concatenated source excerpts, limited by a word budget | Exercises the contract without model quality or API cost |
 | Optional generation | OpenAI adapter behind the generator interface | Separate installation and credentials; offline tests use a fake client |
-| Evaluation | Three labelled queries against one sample document | Gate mechanics, not a meaningful quality benchmark |
+| Evaluation | 10 synthetic documents and 24 labelled questions, with per-case regression floors | Exercises competing evidence and failure cases; not a production accuracy benchmark |
 
 The name `InMemoryHybridRetriever` refers to the two lexical scoring signals above, not a vector database. Interfaces live in [app/ports.py](app/ports.py); composition is in [app/service.py](app/service.py) and [app/factory.py](app/factory.py). Replacing retrieval or reranking requires code changes, not an environment switch.
 
@@ -109,24 +109,25 @@ Windows PowerShell, from the repository root:
 $env:RAG_GENERATOR_PROVIDER = "local"
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 .\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe scripts/run_eval.py --min-recall 0.80 --min-mrr 0.80
+.\.venv\Scripts\python.exe scripts/run_eval.py --baseline evals/baseline.json --output reports/evaluation.json --summary-output reports/evaluation.md
 ```
 
 On macOS / Linux, set `export RAG_GENERATOR_PROVIDER=local` and replace `.\.venv\Scripts\python.exe` with `.venv/bin/python`.
 
-The bundled retrieval fixture returns:
+The bundled suite contains 8 direct questions, 8 paraphrases, 2 multi-document questions, and 6 unsupported questions. Two topic-overlapping distractor documents compete with the runbooks. Initial measured results:
 
-```json
-{
-  "cases": 3,
-  "recall_at_5": 1.0,
-  "mrr": 1.0
-}
-```
+| Measure | Result |
+| --- | --- |
+| Recall@5, answerable questions only | 0.9444 |
+| MRR, answerable questions only | 0.9167 |
+| Unsupported questions correctly rejected | 1 / 6 |
+| Answerable questions not rejected | 18 / 18 |
 
-**These scores are a smoke-test result, not evidence of production accuracy.** All three questions name the same relevant document, and only that document is indexed. The gate measures retrieval, not generated answer quality, safety, or latency. See [evaluation scope](docs/evaluation-gate.md).
+**Strong retrieval does not imply safe abstention.** The suite exposes a missed budget paraphrase, a lower-ranked provider paraphrase, and five unsupported questions that receive source text instead of abstention. These remain visible failures even when the regression gate passes. This small, authored synthetic suite is not a production accuracy or safety benchmark. See [measured results and known gaps](docs/evaluation-results.md).
 
-Tests cover chunk overlap, retrieval ordering, evaluation calculations, API citations, the walkthrough, usage estimates, retry behavior, and an injected fake provider. CI runs the suite on Python 3.10-3.13; the retrieval gate also runs on pull requests.
+CI requires Recall@5 and MRR of at least 0.80 and rejects individual regressions against the committed baseline. It publishes JSON evidence and a readable summary, including known failures. To demand correct abstention on every unsupported question, add `--min-abstention 1`; **that stricter check currently fails**, intentionally exposing the existing limitation.
+
+Tests cover metrics, invalid fixtures, threshold validation, baseline compatibility, per-case regression detection, deliberately broken retrieval/abstention, the API walkthrough, and existing pipeline behaviors. CI runs tests on Python 3.10-3.13 and the evaluation gate on pull requests and main. See [evaluation commands and baseline review](docs/evaluation-gate.md).
 
 ## Limits to understand before deployment
 
@@ -145,6 +146,7 @@ Before using this pattern with real users, add representative positive and negat
 - [End-to-end walkthrough](docs/demo.md)
 - [Architecture and boundaries](docs/architecture.md)
 - [Retrieval gate and limitations](docs/evaluation-gate.md)
+- [Measured results and known failures](docs/evaluation-results.md)
 - [Evaluation strategy](docs/evaluation.md)
 - [Provider interfaces](docs/provider-boundaries.md)
 - [Optional OpenAI setup](docs/openai-provider.md)
