@@ -28,3 +28,9 @@ IDs must be unique within each file. Supported cases need nonempty relevance lab
 ## Baseline
 
 `baseline.json` records per-case metric floors and abstention decisions for these exact fixtures and evaluation settings. A recorded `abstention_correct: false` is a known defect, not a desired answer. Improvements are allowed; previously correct decisions must not regress. See the [baseline review policy](../docs/evaluation-gate.md#review-and-update-a-baseline) before updating it.
+
+## Additional value-evidence suite
+
+`evidence-corpus.json` and `evidence-dataset.json` are separate from the unchanged original fixtures. Seven fictional Orion documents provide numeric prices, a percentage, retention duration, a software version, a request count, operational advice, and a numeric distractor. The sixteen new questions contain eight supported and eight unsupported cases. `evidence-baseline.json` protects their measured behavior.
+
+These examples were authored while developing the guard, not independently labelled or held out. They check that actual values remain answerable and nearby unrelated values are insufficient in specific cases. Unsupported names and locations intentionally remain in the report outside the guard's scope. Synthetic prices and service commitments are not real product facts. See the [measured comparison](../docs/evidence-check.md#measured-results).

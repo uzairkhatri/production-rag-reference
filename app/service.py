@@ -19,5 +19,5 @@ def query(question:str,top_k:int)->QueryOut:
     generated=generator.generate(question,hits,settings.max_context_words)
     citations=[Citation(document_id=h.chunk.document_id,title=h.chunk.title,source=h.chunk.source,chunk_id=h.chunk.id,excerpt=h.chunk.text[:240]) for h in generated.used]
     grounded=citation_coverage(generated.text,[h.chunk.text for h in generated.used])
-    logger.info("query_completed",extra={"trace_id":trace_id,"retrieved":len(hits),"citations":len(citations),"grounding_coverage":grounded,"estimated_tokens":usage.estimated_input_tokens})
+    logger.info("query_completed",extra={"trace_id":trace_id,"retrieved":len(hits),"citations":len(citations),"grounding_coverage":grounded,"estimated_tokens":usage.estimated_input_tokens,"evidence_reason":generated.evidence_reason})
     return QueryOut(answer=generated.text,citations=citations,trace_id=trace_id,retrieved=len(hits),estimated_input_tokens=usage.estimated_input_tokens)

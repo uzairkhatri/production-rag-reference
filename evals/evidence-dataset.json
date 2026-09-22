@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {"id": "value-percentage", "kind": "direct", "question": "What uptime percentage does Orion API guarantee?", "relevant_document_ids": ["orion-availability"]},
+    {"id": "value-price", "kind": "direct", "question": "What is the price for Orion API input tokens?", "relevant_document_ids": ["orion-billing"]},
+    {"id": "value-price-paraphrase", "kind": "paraphrase", "question": "How much does Orion archive storage cost?", "relevant_document_ids": ["orion-billing"]},
+    {"id": "value-duration", "kind": "direct", "question": "For how many days are Orion account exports retained?", "relevant_document_ids": ["orion-retention"]},
+    {"id": "value-version", "kind": "direct", "question": "Which version of the Orion Python SDK is installed?", "relevant_document_ids": ["orion-sdk"]},
+    {"id": "value-count", "kind": "direct", "question": "How many requests per minute does the Orion gateway allow?", "relevant_document_ids": ["orion-gateway"]},
+    {"id": "procedure-incident", "kind": "paraphrase", "question": "How can we investigate Orion outages?", "relevant_document_ids": ["orion-operations"]},
+    {"id": "procedure-cost", "kind": "paraphrase", "question": "What controls keep token costs predictable?", "relevant_document_ids": ["orion-operations"]},
+    {"id": "missing-image-price", "kind": "unsupported", "question": "What price does Orion charge for image generation?", "relevant_document_ids": []},
+    {"id": "missing-database-percentage", "kind": "unsupported", "question": "What uptime percentage does the Orion database guarantee?", "relevant_document_ids": []},
+    {"id": "missing-backup-duration", "kind": "unsupported", "question": "For how many days are Orion backup snapshots retained?", "relevant_document_ids": []},
+    {"id": "missing-java-version", "kind": "unsupported", "question": "Which version of the Orion Java SDK is installed?", "relevant_document_ids": []},
+    {"id": "missing-stream-count", "kind": "unsupported", "question": "How many concurrent streams does the Orion gateway allow?", "relevant_document_ids": []},
+    {"id": "missing-enterprise-price", "kind": "unsupported", "question": "What is the price of the Orion enterprise plan?", "relevant_document_ids": []},
+    {"id": "missing-owner-name", "kind": "unsupported", "question": "What is the name of the Orion service owner?", "relevant_document_ids": []},
+    {"id": "missing-backup-location", "kind": "unsupported", "question": "Which countries host Orion customer backups?", "relevant_document_ids": []}
+  ]
+}

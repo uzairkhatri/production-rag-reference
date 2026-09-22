@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "fixture_sha256": "e5f394baae8398ed9dbc90a789d2cc1f7fdac9a5f833e795749d61a25f2aacf4",
+  "cases": {
+    "value-percentage": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "value-price": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "value-price-paraphrase": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "value-duration": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "value-version": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "value-count": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "procedure-incident": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "procedure-cost": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "missing-image-price": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": true
+    },
+    "missing-database-percentage": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": true
+    },
+    "missing-backup-duration": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": true
+    },
+    "missing-java-version": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": true
+    },
+    "missing-stream-count": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": true
+    },
+    "missing-enterprise-price": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": true
+    },
+    "missing-owner-name": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": false
+    },
+    "missing-backup-location": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": false
+    }
+  }
+}
