@@ -1,14 +1,29 @@
-[
-  {
-    "question": "How should a production RAG system handle retrieval quality?",
-    "relevant_document_ids": ["production-rag"]
-  },
-  {
-    "question": "Why should source metadata be preserved?",
-    "relevant_document_ids": ["production-rag"]
-  },
-  {
-    "question": "What controls help with model provider failures?",
-    "relevant_document_ids": ["production-rag"]
-  }
-]
+{
+  "schema_version": 1,
+  "cases": [
+    {"id": "retrieval-direct", "kind": "direct", "question": "Which metrics evaluate retrieval quality and ranking?", "relevant_document_ids": ["retrieval-evaluation"]},
+    {"id": "citations-direct", "kind": "direct", "question": "What source metadata should an answer citation preserve?", "relevant_document_ids": ["citation-provenance"]},
+    {"id": "provider-direct", "kind": "direct", "question": "How should temporary model provider connection failures be retried?", "relevant_document_ids": ["provider-resilience"]},
+    {"id": "budget-direct", "kind": "direct", "question": "How should input context and output token capacity be budgeted?", "relevant_document_ids": ["context-budget"]},
+    {"id": "tenant-direct", "kind": "direct", "question": "Where should tenant and document permission filters be applied?", "relevant_document_ids": ["tenant-access"]},
+    {"id": "incident-direct", "kind": "direct", "question": "What should request traces capture during an incident?", "relevant_document_ids": ["incident-response"]},
+    {"id": "ingestion-direct", "kind": "direct", "question": "How should old chunks be handled when replacing a document?", "relevant_document_ids": ["ingestion-jobs"]},
+    {"id": "release-direct", "kind": "direct", "question": "What evaluation checks are required before deploying a retrieval change?", "relevant_document_ids": ["release-checks"]},
+    {"id": "retrieval-paraphrase", "kind": "paraphrase", "question": "How can we tell whether search puts useful evidence near the top?", "relevant_document_ids": ["retrieval-evaluation"]},
+    {"id": "citations-paraphrase", "kind": "paraphrase", "question": "How can a reviewer locate the original passage behind a response?", "relevant_document_ids": ["citation-provenance"]},
+    {"id": "provider-paraphrase", "kind": "paraphrase", "question": "The external service keeps dropping connections. Should we keep trying forever?", "relevant_document_ids": ["provider-resilience"]},
+    {"id": "budget-paraphrase", "kind": "paraphrase", "question": "There is too much evidence to fit alongside the reply. What should be removed first?", "relevant_document_ids": ["context-budget"]},
+    {"id": "tenant-paraphrase", "kind": "paraphrase", "question": "How do we stop one customer's private passages reaching another customer's model?", "relevant_document_ids": ["tenant-access"]},
+    {"id": "incident-paraphrase", "kind": "paraphrase", "question": "A response failed after a deployment. How can we find the stage responsible?", "relevant_document_ids": ["incident-response"]},
+    {"id": "ingestion-paraphrase", "kind": "paraphrase", "question": "A shorter replacement file still returns paragraphs from its older version. What should the importer do?", "relevant_document_ids": ["ingestion-jobs"]},
+    {"id": "release-paraphrase", "kind": "paraphrase", "question": "An update makes previously successful questions worse. What should block it from going live?", "relevant_document_ids": ["release-checks"]},
+    {"id": "citations-and-access", "kind": "multi_document", "question": "Which citation fields locate evidence, and how must permissions be checked before serving source links?", "relevant_document_ids": ["citation-provenance", "tenant-access"]},
+    {"id": "provider-and-traces", "kind": "multi_document", "question": "How should temporary provider failures be retried and traced for incident investigation?", "relevant_document_ids": ["provider-resilience", "incident-response"]},
+    {"id": "unsupported-sla", "kind": "unsupported", "question": "What exact uptime percentage does the production service contract guarantee?", "relevant_document_ids": []},
+    {"id": "unsupported-retention", "kind": "unsupported", "question": "For exactly how many days are tenant documents retained after account deletion?", "relevant_document_ids": []},
+    {"id": "unsupported-price", "kind": "unsupported", "question": "What is the dollar price per million input tokens for the deployed model?", "relevant_document_ids": []},
+    {"id": "unsupported-sdk", "kind": "unsupported", "question": "Which exact SDK version is installed on the production server?", "relevant_document_ids": []},
+    {"id": "unsupported-finance", "kind": "unsupported", "question": "What credit score guarantees approval for a customer's loan application?", "relevant_document_ids": []},
+    {"id": "unsupported-zero-overlap", "kind": "unsupported", "question": "Quasar redshift spectroscopy?", "relevant_document_ids": []}
+  ]
+}

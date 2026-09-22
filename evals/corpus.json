@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "id": "retrieval-evaluation",
+      "title": "Retrieval evaluation procedure",
+      "source": "synthetic://runbooks/retrieval-evaluation",
+      "text": "Evaluate retrieval with labelled questions and relevant document identifiers. Recall measures how much required evidence reaches the candidate set; reciprocal rank rewards the first relevant result appearing early. Include distractor documents and paraphrased questions. Compare candidate rankings against the approved baseline before changing the search implementation. These retrieval metrics do not measure whether an answer is factually correct."
+    },
+    {
+      "id": "citation-provenance",
+      "title": "Source attribution and citations",
+      "source": "synthetic://runbooks/citation-provenance",
+      "text": "Preserve the document identifier, title, source location, and chunk identifier during ingestion. Return that metadata with a short excerpt as an answer citation so reviewers can locate the original evidence. A citation proves which passage was selected, not that every claim follows from it. Check claim support separately against the cited passages."
+    },
+    {
+      "id": "provider-resilience",
+      "title": "Model provider failure handling",
+      "source": "synthetic://runbooks/provider-resilience",
+      "text": "Set a request deadline for external model calls. Retry temporary connection failures with a bounded attempt count and exponential backoff. Do not retry invalid credentials or malformed requests as if they were transient outages. Record the final failure and return an explicit error after attempts are exhausted. Verify the SDK exception types and its built-in retry policy to avoid multiplying attempts."
+    },
+    {
+      "id": "context-budget",
+      "title": "Context selection and token accounting",
+      "source": "synthetic://runbooks/context-budget",
+      "text": "Reserve output capacity before selecting input context. Count tokens with the deployed model tokenizer, then trim or summarize lower-priority passages until the input fits. A word-based estimate is useful for rough planning but is not provider billing data or a strict spending cap. Record actual input and output usage after completion and apply separate account-level cost limits."
+    },
+    {
+      "id": "tenant-access",
+      "title": "Tenant isolation and document permissions",
+      "source": "synthetic://runbooks/tenant-access",
+      "text": "Authenticate the caller before search. Apply tenant and document permission filters inside retrieval, before passages enter the model context. Do not rely on the prompt to hide another customer's documents. Recheck permissions when serving source links and test cross-tenant requests with adversarial fixtures. Tenant identifiers supplied by a client must be verified against its authenticated identity."
+    },
+    {
+      "id": "incident-response",
+      "title": "Investigating failed requests",
+      "source": "synthetic://runbooks/incident-response",
+      "text": "Attach a trace identifier to each request and propagate it across retrieval and generation logs. Capture stage latency, selected document identifiers, provider errors, and token usage. During an incident, correlate the trace with the failed stage and compare recent deployment changes. Redact secrets and sensitive document text before exporting telemetry; a trace identifier alone is not distributed tracing."
+    },
+    {
+      "id": "ingestion-jobs",
+      "title": "Document updates and asynchronous indexing",
+      "source": "synthetic://runbooks/ingestion-jobs",
+      "text": "Queue large document imports and record job progress separately from query handling. Use stable document identifiers and version each ingestion. When replacing a document, remove all chunks from its previous version, including trailing chunks that no longer exist. Make retries idempotent so a repeated import cannot duplicate indexed evidence. Publish the new version atomically to avoid mixing old and new passages."
+    },
+    {
+      "id": "release-checks",
+      "title": "Release approval checks",
+      "source": "synthetic://runbooks/release-checks",
+      "text": "Before deploying a retrieval change, run the versioned evaluation suite and inspect per-question regressions. Require review for changed relevance labels or accepted baselines. Test unsupported questions separately from answerable questions; aggregate retrieval scores cannot establish safe abstention. Keep failed cases in reports even when they are documented known limitations. Roll back when a release introduces an unapproved regression."
+    },
+    {
+      "id": "conference-program",
+      "title": "Search engineering conference program",
+      "source": "synthetic://distractors/conference-program",
+      "text": "The conference program includes talks titled Retrieval Quality, Source Citations, Model Provider Reliability, and Tenant Security. Morning workshops discuss evaluation questions and production AI systems. Registration covers lunch and access to recordings. Speaker biographies and presentation abstracts are available at the registration desk. This program lists session topics but contains no implementation procedures."
+    },
+    {
+      "id": "marketing-quality",
+      "title": "Product launch quality announcement",
+      "source": "synthetic://distractors/marketing-quality",
+      "text": "The launch announcement highlights reliable answers, transparent citations, lower token costs, and fast document search. Customers are invited to a quality demonstration with the product team. The campaign describes the benefits of trustworthy AI and simpler workflows. It does not specify evaluation metrics, security controls, operational policies, pricing, or service commitments."
+    }
+  ]
+}

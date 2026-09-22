@@ -1,6 +1,10 @@
 name: RAG Evaluation
 on:
   pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
 jobs:
   retrieval-quality:
     runs-on: ubuntu-latest
@@ -10,5 +14,23 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -e ".[dev]"
-      - name: Run retrieval regression gate
-        run: python scripts/run_eval.py --min-recall 0.80 --min-mrr 0.80
+      - name: Run retrieval and per-case regression gate
+        run: >-
+          python scripts/run_eval.py --min-recall 0.80 --min-mrr 0.80
+          --baseline evals/baseline.json
+          --output reports/evaluation.json --summary-output reports/evaluation.md
+      - name: Publish evaluation summary
+        if: always()
+        run: |
+          if [ -f reports/evaluation.md ]; then
+            cat reports/evaluation.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Evaluation did not produce a report. Check the gate step for input or runtime errors." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Upload evaluation report even when the gate fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rag-evaluation
+          path: reports/evaluation.*
+          if-no-files-found: warn

@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "fixture_sha256": "8584031bea1c2ef1b13745cd3d2f11762ce8b230f91980e394078a8045809a5e",
+  "cases": {
+    "retrieval-direct": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "citations-direct": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "provider-direct": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "budget-direct": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "tenant-direct": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "incident-direct": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "ingestion-direct": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "release-direct": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "retrieval-paraphrase": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "citations-paraphrase": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "provider-paraphrase": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 0.5,
+      "abstention_correct": true
+    },
+    "budget-paraphrase": {
+      "recall_at_k": 0.0,
+      "reciprocal_rank": 0.0,
+      "abstention_correct": true
+    },
+    "tenant-paraphrase": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "incident-paraphrase": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "ingestion-paraphrase": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "release-paraphrase": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "citations-and-access": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "provider-and-traces": {
+      "recall_at_k": 1.0,
+      "reciprocal_rank": 1.0,
+      "abstention_correct": true
+    },
+    "unsupported-sla": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": false
+    },
+    "unsupported-retention": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": false
+    },
+    "unsupported-price": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": false
+    },
+    "unsupported-sdk": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": false
+    },
+    "unsupported-finance": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": false
+    },
+    "unsupported-zero-overlap": {
+      "recall_at_k": null,
+      "reciprocal_rank": null,
+      "abstention_correct": true
+    }
+  }
+}

@@ -1,23 +1,63 @@
-# Retrieval evaluation gate
+# Offline evaluation gate
 
-The repository includes a small labelled evaluation dataset and a deterministic regression runner.
+The runner loads [corpus.json](../evals/corpus.json) and [dataset.json](../evals/dataset.json), indexes all documents, and evaluates each labelled question. It is deterministic and always uses the local extractive generator, even if `RAG_GENERATOR_PROVIDER=openai` is set. No server, credentials, model download, or paid call is needed.
 
-```bash
-python scripts/run_eval.py --min-recall 0.80 --min-mrr 0.80
+## Run the same gate as CI
+
+After [installation](../README.md#try-it-locally), run from the repository root:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/run_eval.py --baseline evals/baseline.json --output reports/evaluation.json --summary-output reports/evaluation.md
 ```
 
-The runner reports Recall@5 and Mean Reciprocal Rank and exits non-zero when either configured threshold is missed. GitHub Actions runs the same check on pull requests.
+On macOS / Linux replace `.\.venv\Scripts\python.exe` with `.venv/bin/python`. Output files are generated and ignored by Git. The complete report is also printed as JSON.
 
-Run from the repository root after installation. No server or API key is needed.
+The default thresholds remain Recall@5 >= 0.80 and MRR >= 0.80. Supplying `--baseline` also checks every case against its approved recall, reciprocal rank, and abstention decision. An improvement elsewhere cannot cancel a per-case regression. Without `--baseline`, only the requested aggregate thresholds are gated.
 
-The dataset contains three questions, all pointing to `production-rag`, the only indexed document. Expected output:
+Exit codes: **0** for satisfied gates, **1** for measured threshold failures or regressions, **2** for invalid inputs or file errors. JSON and Markdown reports are still written when a measured gate fails. Invalid inputs are rejected before reporting scores.
 
-```json
-{"cases": 3, "recall_at_5": 1.0, "mrr": 1.0}
+GitHub Actions runs on pull requests and main, publishes a job summary, and uploads the `rag-evaluation` artifact even on gate failure when reports exist.
+
+## Read the metrics correctly
+
+- **Recall@K:** fraction of required document IDs present in the top K retrieved chunks after reranking; averaged over answerable cases. Duplicate chunks cannot increase recall.
+- **MRR:** mean reciprocal position of the first relevant chunk, also over answerable cases. Repeated chunks still occupy rank positions. It does not measure whether all evidence is present; multi-document recall does that.
+- **Unsupported abstention rate:** fraction of unsupported questions for which the local generator returns no used evidence. These cases have `null` retrieval metrics and are excluded from retrieval averages.
+- **Answerable non-abstention rate:** checks that the generator does not reject supported questions. It does not validate the content of an answer.
+- **Case failures:** missing required documents, a non-relevant first result, an unsupported question answered, or an answerable question rejected. They remain listed even when accepted by the regression baseline.
+
+The report includes category-level retrieval scores, ranked document/chunk IDs, missing IDs, expected/observed abstention, and a short answer excerpt. The retrieval implementation retains zero-score hits; retrieval presence alone is not evidence sufficiency.
+
+## Known gaps are not hidden
+
+The initial [results](evaluation-results.md) include two paraphrase failures and five unsupported questions answered. The committed baseline records those limitations, not a claim that they are acceptable for deployment. CI protects against new regressions; it does not certify correctness.
+
+For a strict unsupported-question gate:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/run_eval.py --baseline evals/baseline.json --min-abstention 1 --output reports/strict.json
 ```
 
-This demonstrates gate mechanics, not statistically meaningful production quality. The retriever retains zero-score hits, so a one-document corpus cannot meaningfully test ranking discrimination. These scores say nothing about answer correctness, model safety, latency, or operating cost.
+This currently exits **1**, because only 1 of 6 unsupported questions is rejected. A future fix should improve those decisions without breaking answerable cases. Never remove difficult questions merely to obtain a green check.
 
-For a real evaluation, expand both the indexed corpus in the runner and the labelled dataset. Include distractors, paraphrases, multi-document answers, and separately assessed unanswerable questions. A new `--dataset` changes labels and questions, not the indexed corpus. The runner does not measure abstention.
+## Review and update a baseline
 
-To inspect failure, use a temporary dataset whose `relevant_document_ids` names an absent document and pass its path with `--dataset`. Recall and MRR should be zero, and the process should exit with code 1 at the default thresholds. Do not replace real labels merely to obtain a passing score.
+The baseline includes a SHA-256 fingerprint of the complete corpus, labels/questions, and evaluation configuration. Changed fixtures, top K, chunking settings, or local word budget require explicit review rather than silent comparison against unrelated results. Case IDs and metric applicability must also match.
+
+To propose a new baseline after an intentional change:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/run_eval.py --write-baseline reports/candidate-baseline.json --output reports/candidate-report.json --summary-output reports/candidate-summary.md
+```
+
+This writes measured floors, **not an approval**. It can record failures. Inspect every changed label, metric, and failure, explain the reason in the PR, and only then replace `evals/baseline.json` with the reviewed candidate. Prefer recording improvements as stronger floors. Do not regenerate baselines automatically in CI or weaken floors simply because a test failed.
+
+## Custom fixtures
+
+Use `--corpus path/to/corpus.json --dataset path/to/dataset.json`. The versioned schema and [labelling policy](../evals/README.md) require unique IDs, nonblank fields, and both answerable and unsupported cases. Answerable labels must name documents in the corpus; unsupported cases must have no relevance labels. Empty or inconsistent data, invalid top K, and non-finite/out-of-range thresholds are errors, not passing evaluations.
+
+The original three-case list format is replaced by the versioned object format; custom datasets must migrate. A missing labelled document is now an input error, not a valid negative test. To test a retrieval regression, leave the relevant document in the corpus and change which chunks retrieval returns; automated tests exercise that failure path.
+
+## Scope
+
+These are authored synthetic fixtures, not customer traffic or a held-out production benchmark. They do not establish factual accuracy, citation correctness, prompt-injection resistance, access control, latency, provider reliability, or cost. The runner exercises retrieval/reranking/local generation directly, not HTTP or service-level budget trimming. All bundled documents fit in one chunk; tests additionally cover duplicate-chunk metric behavior. Expand to realistic multi-chunk documents and independently labelled queries before drawing deployment conclusions.
